@@ -104,9 +104,10 @@ tr.off td{color:var(--ink-3)}
 .gt td{display:block;padding:0;border:0}
 .gt td:nth-child(1){grid-column:1;grid-row:1}
 .gt td:nth-child(2){grid-column:2;grid-row:1}
-.gt td:nth-child(5){grid-column:3;grid-row:1}
+.gt td:nth-child(6){grid-column:3;grid-row:1}
 .gt td:nth-child(3){grid-column:2;grid-row:2}
-.gt td:nth-child(4){grid-column:3;grid-row:2}
+.gt td:nth-child(5){grid-column:3;grid-row:2}
+.gt td:nth-child(4){grid-column:2;grid-row:3}
 .gt .in{width:6.5rem}.gt .in.sel{width:100%}.gt .in.wide{width:100%}
 .rr{grid-template-columns:1fr auto;gap:4px 10px}
 .rr .bar{grid-column:1/-1;grid-row:2}
@@ -173,7 +174,7 @@ tr.off td{color:var(--ink-3)}
 <header>
 <h1>Reparto de dinero</h1>
 <p class="lead" style="margin-top:8px">Este mes entran <b data-k="entra">—</b>. Mándalos así: <b data-k="r_sab">—</b> a la cuenta Sabadell, <b data-k="r_ing">—</b> a la cuenta ING y <b data-k="r_aho">—</b> a la cuenta ahorro Sabadell.</p>
-<p class="muted" style="margin-top:6px">El reparto sale del mes que elijas arriba, de tus gastos y de tus ingresos extras de la planificación mensual. Puedes cambiar lo que va a Sabadell y a ING; lo que sobra va a ahorro.</p>
+<p class="muted" style="margin-top:6px">El reparto sale del mes que elijas arriba, de tus gastos y de tus ingresos extras de la planificación mensual. Cada gasto va a la cuenta que elijas en «Se cobra de» (Planificación mensual). Puedes cambiar lo que va a Sabadell y a ING; lo que sobra va a ahorro.</p>
 </header>
 <p class="warnbox" data-warnr hidden>Lo que entra no cubre las cuentas Sabadell e ING: no queda nada para ahorro este mes.</p>
 
@@ -192,7 +193,7 @@ tr.off td{color:var(--ink-3)}
 <div class="card">
 <div class="hd"><span class="eyebrow">Gráfica</span><h2>Reparto de lo que entra</h2><span class="muted">Porcentaje de cada cuenta sobre el total</span></div>
 <div class="rep" id="rep-bars"></div>
-<p class="muted">La cuenta Sabadell paga el IVA neto, la cuota de autónomo y la reserva para la Renta. La cuenta ING cubre los gastos de vida y los gastos de la empresa. Lo demás va a la cuenta ahorro Sabadell.</p>
+<p class="muted">La cuenta Sabadell paga el IVA neto, la cuota de autónomo, la reserva para la Renta y los gastos de vida que marques como «Sabadell». La cuenta ING cubre el resto de gastos de vida y los gastos de la empresa. Lo demás va a la cuenta ahorro Sabadell.</p>
 </div>
 </section>
 <section class="card">
@@ -229,15 +230,16 @@ tr.off td{color:var(--ink-3)}
 </section>
 
 <section class="card" id="gastos-card">
-<div class="hd"><span class="eyebrow">Gastos de vida</span><h2>Qué gastas y qué puedes cambiar</h2><span class="muted">Marca para contar un gasto, cambia nombre, tipo e importe, o bórralo con la ×.</span></div>
+<div class="hd"><span class="eyebrow">Gastos de vida</span><h2>Qué gastas y qué puedes cambiar</h2><span class="muted">Marca para contar un gasto, cambia nombre, tipo, banco de cobro e importe, o bórralo con la ×.</span></div>
 <div class="chips" id="gsub"></div>
-<div class="tw"><table class="gt"><thead><tr><th>Contar</th><th>Concepto</th><th>Tipo</th><th class="r">Importe al mes</th><th></th></tr></thead><tbody id="gastos"></tbody></table></div>
+<div class="tw"><table class="gt"><thead><tr><th>Contar</th><th>Concepto</th><th>Tipo</th><th>Se cobra de</th><th class="r">Importe al mes</th><th></th></tr></thead><tbody id="gastos"></tbody></table></div>
 <div>
 <p class="eyebrow" style="margin-bottom:6px">Añadir un gasto</p>
 <div class="addrow">
 <label><span class="muted">Concepto</span><input class="in wide" id="add-n" type="text" maxlength="40" placeholder="Ej. Gimnasio"></label>
 <label><span class="muted">Importe al mes</span><input class="in" id="add-i" type="text" inputmode="decimal" placeholder="0,00"></label>
 <label><span class="muted">Tipo</span><select class="in sel" id="add-t" style="width:100%"><option>Fijos</option><option selected>Variables</option><option>Puntuales</option></select></label>
+<label><span class="muted">Se cobra de</span><select class="in sel" id="add-b2" style="width:100%"><option value="ING" selected>Cuenta ING</option><option value="SAB">Cuenta Sabadell</option></select></label>
 <button class="btn" id="add-b" type="button">Añadir</button>
 </div>
 </div>
@@ -452,7 +454,7 @@ var G0 = [
  ['Fijos','Amazon Prime',13.98,1,'Revisar'],['Fijos','Apple · suscripciones fijas',42.70,1,'Revisar'],['Fijos','Make (automatización)',9.75,1,'Se quita el mes que viene'],['Fijos','Hosting Acens (ING)',9.67,1,''],['Fijos','Móvil Simyo',7.00,1,''],['Fijos','Seguro (póliza)',22.19,1,'Se quita el mes que viene'],['Fijos','Spotify',11.99,1,'Suprimir'],['Fijos','Zoom',15.99,1,'Revisar'],['Fijos','PayPal · Acens',2.66,1,''],['Fijos','PayPal · Wondershare',2.50,1,'2,41 USD'],['Fijos','PayPal · OpenAI',8.00,1,''],['Fijos','PayPal · Fastspring',9.61,1,''],
  ['Variables','Restauración y cafés',343.09,1,'Recortar'],['Variables','Compras Amazon',310.52,1,'Separa negocio y personal'],['Variables','Efectivo',290.00,1,'Sin detallar'],['Variables','Supermercado',158.70,1,'Necesario'],['Variables','Gasolina y peajes',115.38,1,'Necesario'],['Variables','Bizum enviado',77.00,1,''],['Variables','Apple · otras compras',64.72,1,''],['Variables','Deporte (Decathlon)',57.21,1,'Recortar'],['Variables','Pádel y app',29.99,1,'Recortar'],['Variables','Farmacia y salud',37.32,1,'Necesario'],['Variables','Varios (hogar, comisión, PayPal)',11.79,1,''],
  ['Puntuales','Viaje (hotel)',254.49,0,'Gasto puntual de octubre']
-].map(function (r, i) { return {id:'g'+(i+1),grupo:r[0],concepto:r[1],importe:r[2],activo:r[3],nota:r[4]}; });
+].map(function (r, i) { return {id:'g'+(i+1),grupo:r[0],concepto:r[1],importe:r[2],activo:r[3],nota:r[4],banco:'ING'}; });
 
 var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
 var $ = function (id) { return document.getElementById(id); };
@@ -491,7 +493,7 @@ function calcM(k) {
   if (memo[k]) return memo[k];
   var P = st.params, m = k === 'base' ? {} : (st.meses[k] || {});
   var ing = m.ingreso_base != null ? m.ingreso_base : P.ingreso_base, gn = m.gasto_iva != null ? m.gasto_iva : P.gasto_iva, ssE = m.cuota_ss != null ? m.cuota_ss : P.cuota_ss_elegida;
-  var vida = 0, variables = 0; listFor(k).forEach(function (g) { if (g.activo) { vida += g.importe; if (g.grupo === 'Variables') variables += g.importe; } });
+  var vida = 0, variables = 0, vidaSab = 0; listFor(k).forEach(function (g) { if (g.activo) { vida += g.importe; if (g.banco === 'SAB') vidaSab += g.importe; if (g.grupo === 'Variables') variables += g.importe; } });
   var gb = gn / (1 + P.iva_gasto), ivaS = gn - gb, ivaR = ing * P.iva, rnCot = (ing - gb) * 0.93;
   var tr = TRAMOS.filter(function (t) { return rnCot <= t[0]; })[0] || TRAMOS[TRAMOS.length - 1], ss = ssE > 0 ? ssE : tr[1];
   var transf = ing + ivaR - ing * P.retencion + P.nomina, ivaNeto = ivaR - ivaS;
@@ -499,7 +501,7 @@ function calcM(k) {
   var cuota = Math.max(0, scale(base) - scale(P.minimo_personal)), prov = Math.max(0, cuota - ing * P.retencion * 12) / 12;
   var extra = (m.extras || []).reduce(function (a, e) { return a + e.importe; }, 0), libre = transf - ss - gn - ivaNeto - prov;
   var base0 = (ing - P.ss_excel - gn) * 12 + P.nomina * 12;
-  return (memo[k] = {k:k, ing:ing, gn:gn, transf:transf, extra:extra, total:transf + extra, entra: m.entrada != null ? m.entrada : transf + extra, ivaNeto:ivaNeto, ss:ss, prov:prov, cuota:cuota, libre:libre, vida:vida, variables:variables, ahorro:libre + extra - vida, base:base, base0:base0, cuota0:scale(base0)});
+  return (memo[k] = {k:k, ing:ing, gn:gn, transf:transf, extra:extra, total:transf + extra, entra: m.entrada != null ? m.entrada : transf + extra, ivaNeto:ivaNeto, ss:ss, prov:prov, cuota:cuota, libre:libre, vida:vida, vidaSab:vidaSab, variables:variables, ahorro:libre + extra - vida, base:base, base0:base0, cuota0:scale(base0)});
 }
 function sim(target, fn) {
   var acc = st.params.ahorro_actual; if (acc >= target) return 0;
@@ -514,7 +516,7 @@ function bancoRows() {
   return [f('Tu Excel, antes de IRPF', c.base0 / 12), f('Tu Excel, después de IRPF', (c.base0 - c.cuota0) / 12), f('Corregido, antes de IRPF', c.base / 12), f('Corregido, después de IRPF (prudente)', (c.base - c.cuota) / 12)];
 }
 function repartoOf(c) {
-  var m = c.k === 'base' ? {} : (st.meses[c.k] || {}), r = m.rep || {}, sabA = c.ivaNeto + c.ss + c.prov, ingA = c.vida + c.gn;
+  var m = c.k === 'base' ? {} : (st.meses[c.k] || {}), r = m.rep || {}, sabA = c.ivaNeto + c.ss + c.prov + c.vidaSab, ingA = c.vida - c.vidaSab + c.gn;
   var sab = r.sab != null ? r.sab : sabA, ing = r.ing != null ? r.ing : ingA, rest = c.entra - sab - ing;
   return {sab:sab, ing:ing, aho:Math.max(0, rest), rest:rest, sabA:sabA, ingA:ingA};
 }
@@ -682,10 +684,11 @@ function buildTables() {
     chk.addEventListener('change', function () { g.activo = chk.checked ? 1 : 0; tr.className = g.activo ? '' : 'off'; changed(); }); t0.append(chk);
     var t1 = el('td'), nm = el('input', 'in wide'); nm.type = 'text'; nm.maxLength = 40; nm.value = g.concepto; nm.setAttribute('aria-label', 'Concepto'); nm.addEventListener('input', function () { g.concepto = nm.value; changed(); }); t1.append(nm); if (g.nota) t1.append(el('div', 'muted', g.nota));
     var t2 = el('td'), sl = el('select', 'in sel'); ['Fijos', 'Variables', 'Puntuales'].forEach(function (o) { sl.append(new Option(o, o)); }); sl.value = g.grupo; sl.setAttribute('aria-label', 'Tipo de ' + g.concepto); sl.addEventListener('change', function () { g.grupo = sl.value; changed(); }); t2.append(sl);
+    var tb2 = el('td'), bs = el('select', 'in sel'); bs.append(new Option('Cuenta ING', 'ING'), new Option('Cuenta Sabadell', 'SAB')); bs.value = g.banco === 'SAB' ? 'SAB' : 'ING'; bs.setAttribute('aria-label', 'Se cobra de, ' + g.concepto); bs.addEventListener('change', function () { g.banco = bs.value; changed(); }); tb2.append(bs);
     var t3 = el('td', 'r'), inp = el('input', 'in'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.value = g.importe.toFixed(2).replace('.', ','); inp.setAttribute('aria-label', 'Importe de ' + g.concepto);
     inp.addEventListener('input', function () { var v = parse(inp.value); if (v != null && v >= 0) { g.importe = v; changed(); } }); inp.addEventListener('blur', function () { inp.value = g.importe.toFixed(2).replace('.', ','); }); t3.append(inp);
     var t4 = el('td'), x = el('button', 'btn x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Quitar ' + g.concepto); x.addEventListener('click', function () { list.splice(list.indexOf(g), 1); buildTables(); changed(); }); t4.append(x);
-    tr.append(t0, t1, t2, t3, t4); tb.append(tr);
+    tr.append(t0, t1, t2, tb2, t3, t4); tb.append(tr);
   });
   var pb = $('params'); pb.replaceChildren();
   PARAMS.forEach(function (p) {
@@ -713,7 +716,7 @@ function buildMonths() {
   var r = $('rs-mes'); r.replaceChildren(); r.append(new Option('Total del periodo', 'total')); for (var q = -5; q <= 12; q++) { var kk = key(q); r.append(new Option(cap(mlabel(kk)), kk)); } r.value = 'total';
 }
 function adopt(d) {
-  st = {gastos: Array.isArray(d.gastos) ? d.gastos.map(function (g) { return {id:String(g.id), grupo:g.grupo, concepto:String(g.concepto), importe:Number(g.importe) || 0, activo:g.activo ? 1 : 0, nota:g.nota || ''}; }) : clone(G0), params:Object.assign({}, DEF_P, d.params || {}), meses:clone(d.meses || {})};
+  st = {gastos: Array.isArray(d.gastos) ? d.gastos.map(function (g) { return {id:String(g.id), grupo:g.grupo, concepto:String(g.concepto), importe:Number(g.importe) || 0, activo:g.activo ? 1 : 0, nota:g.nota || '', banco:g.banco === 'SAB' ? 'SAB' : 'ING'}; }) : clone(G0), params:Object.assign({}, DEF_P, d.params || {}), meses:clone(d.meses || {})};
   saved = clone(norm(st));
 }
 var LS = 'planificacion-jaime-v1';
@@ -745,7 +748,7 @@ $('mes-prev').addEventListener('click', function () { if (sel === 'base') return
 $('mes-reset').addEventListener('click', function () { if (sel !== 'base') delete st.meses[sel]; buildTables(); changed(); });
 $('add-b').addEventListener('click', function () {
   var n = $('add-n'), i = $('add-i'), v = parse(i.value); if (!n.value.trim() || v == null || v < 0) return;
-  listFor(sel).push({id:'g' + Date.now(), grupo:$('add-t').value, concepto:n.value.trim(), importe:v, activo:1, nota:''}); n.value = ''; i.value = ''; buildTables(); changed();
+  listFor(sel).push({id:'g' + Date.now(), grupo:$('add-t').value, concepto:n.value.trim(), importe:v, activo:1, nota:'', banco:$('add-b2').value}); n.value = ''; i.value = ''; buildTables(); changed();
 });
 function bindMonth(id, field, param) {
   $(id).addEventListener('input', function () {
