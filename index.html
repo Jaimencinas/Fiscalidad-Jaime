@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planificación Jaime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F5F2;--surface:#FFFFFF;--surface-2:#EBEDE8;--line:#D6D9D2;--line-strong:#B9BDB4;--ink:#1B2028;--ink-2:#4E555F;--ink-3:#7C838D;--accent:#B5562A;--accent-ink:#FFFFFF;--accent-soft:#F6E4DA;--ok:#2E7D5B;--ok-soft:#DDEFE5;--warn:#B58A1B;--warn-soft:#F7ECCB;--crit:#B4372C;--crit-soft:#F5DCD8;--info:#2F5FA8;--radius:6px;--shadow:0 1px 2px rgba(20,24,30,.06),0 4px 14px rgba(20,24,30,.06);--display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181C;--surface:#1E2227;--surface-2:#262B31;--line:#333A42;--line-strong:#46505A;--ink:#E9E7E1;--ink-2:#B2B7BE;--ink-3:#7F868F;--accent:#D9784A;--accent-ink:#1B1410;--accent-soft:#3A271D;--ok:#5DBE8F;--ok-soft:#1E3A2E;--warn:#D9B04A;--warn-soft:#3A311A;--crit:#E0665A;--crit-soft:#3E211E;--info:#7FA5E6;--shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#15181C;--surface:#1E2227;--surface-2:#262B31;--line:#333A42;--line-strong:#46505A;--ink:#E9E7E1;--ink-2:#B2B7BE;--ink-3:#7F868F;--accent:#D9784A;--accent-ink:#1B1410;--accent-soft:#3A271D;--ok:#5DBE8F;--ok-soft:#1E3A2E;--warn:#D9B04A;--warn-soft:#3A311A;--crit:#E0665A;--crit-soft:#3E211E;--info:#7FA5E6;--shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45}
+.wrap{max-width:1120px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:clamp(28px,5vw,38px);letter-spacing:.01em}
+h2{font-size:20px;letter-spacing:.01em}
+p{margin:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{width:30px;height:30px;border:2px solid var(--ink);border-radius:6px;position:relative;flex:none}
+.mark::before{content:"";position:absolute;left:9px;top:-6px;width:8px;height:5px;background:var(--ink);border-radius:2px 2px 0 0}
+.mark::after{content:"";position:absolute;left:4px;right:4px;bottom:4px;height:11px;background:var(--accent);border-radius:2px}
+.brand b{font-family:var(--display);font-size:24px;font-weight:700}
+.brand span{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.savebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.status{font-size:12px;color:var(--ink-3)}
+.status.dirty{color:var(--ink);background:var(--warn-soft);border:1px solid var(--warn);border-radius:999px;padding:2px 10px}
+.status.ok{color:var(--ok)}
+.status.err{color:var(--crit)}
+.btn{font-family:var(--body);font-size:13px;font-weight:600;background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:8px 16px;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:var(--surface-2);color:var(--ink)}
+.btn.x{background:none;color:var(--ink-3);padding:2px 8px;font-size:18px}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line)}
+.tab{font-family:var(--display);font-size:20px;font-weight:700;padding:8px 16px;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--ink-3);cursor:pointer;border-radius:6px 6px 0 0}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab:focus-visible,.btn:focus-visible,.in:focus-visible,.chk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{display:flex;flex-direction:column;gap:16px}
+.panel[hidden]{display:none}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.lead{font-size:16px;line-height:1.5;max-width:64ch}
+.lead b,.note b{font-family:var(--mono);font-weight:400;font-variant-numeric:tabular-nums;color:var(--accent);white-space:nowrap}
+.muted{color:var(--ink-3);font-size:12px}
+.warnbox{background:var(--warn-soft);border:1px solid var(--warn);border-radius:var(--radius);padding:10px 12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10.5rem),1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.tile .v{font-family:var(--display);font-size:32px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.tile .sub{font-size:12px;color:var(--ink-3)}
+.tile.hot .v{color:var(--accent)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card .hd{display:flex;flex-direction:column;gap:2px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;padding:6px 8px;border-bottom:2px solid var(--line);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.r,th.r{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th.r{font-family:var(--body)}
+tr:last-child td{border-bottom:0}
+td.strong{font-weight:600}
+td.txt{min-width:14rem;line-height:1.45;vertical-align:top}
+tr.off td{color:var(--ink-3)}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;background:var(--surface-2);color:var(--ink-2)}
+.s-alta,.s-no{background:var(--crit-soft);color:var(--crit)}.s-media,.s-justo{background:var(--warn-soft);color:var(--ink)}.s-baja{background:var(--surface-2);color:var(--ink-2)}.s-correcto,.s-si{background:var(--ok-soft);color:var(--ok)}
+.rep{display:flex;flex-direction:column;gap:10px}
+.rr{display:grid;grid-template-columns:minmax(7rem,38%) 1fr auto;gap:10px;align-items:center}
+.rr .bar{height:12px;background:var(--surface-2);border-radius:2px;overflow:hidden}
+.rr .bar i{display:block;height:100%;border-radius:2px}
+.rr .v{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.prog{height:14px;background:var(--surface-2);border-radius:3px;overflow:hidden;border:1px solid var(--line)}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.chart{position:relative;min-height:300px}
+.chart svg{display:block;width:100%;height:auto}
+.chart .tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);box-shadow:var(--shadow);padding:4px 8px;font-family:var(--mono);font-size:12px;white-space:nowrap}
+.docs{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:4px}
+.in{font-family:var(--mono);font-size:14px;background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);border-radius:6px;padding:5px 8px;width:7.5rem;text-align:right}
+.in.wide{width:100%;min-width:9rem;text-align:left;font-family:var(--body)}
+.in.sel{width:auto;text-align:left;font-family:var(--body)}
+.chk{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:12px;align-items:end}
+.ctl label,.addrow label{display:flex;flex-direction:column;gap:4px}
+.ctl .in,.addrow .in{width:100%}
+.addrow{display:grid;grid-template-columns:minmax(10rem,2fr) minmax(6rem,1fr) minmax(7rem,1fr) auto;gap:8px;align-items:end}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{background:var(--surface-2);border-radius:999px;padding:3px 12px;font-size:12px;color:var(--ink-2)}
+.chips b{font-family:var(--mono);font-weight:400;color:var(--ink)}
+.sticky{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0}
+@media (max-width:640px){
+.wrap{padding:10px;gap:12px}
+.tab{flex:1;font-size:17px;padding:8px 6px;text-align:center}
+.card{padding:12px}
+.tile .v{font-size:28px}
+.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+.addrow{grid-template-columns:1fr 1fr}
+.addrow .btn{grid-column:1/-1}
+.ctl{grid-template-columns:1fr}
+.gt thead{display:none}
+.gt,.gt tbody{display:block}
+.gt tr{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.gt td{display:block;padding:0;border:0}
+.gt td:nth-child(1){grid-column:1;grid-row:1}
+.gt td:nth-child(2){grid-column:2;grid-row:1}
+.gt td:nth-child(5){grid-column:3;grid-row:1}
+.gt td:nth-child(3){grid-column:2;grid-row:2}
+.gt td:nth-child(4){grid-column:3;grid-row:2}
+.gt .in{width:6.5rem}.gt .in.sel{width:100%}.gt .in.wide{width:100%}
+.rr{grid-template-columns:1fr auto;gap:4px 10px}
+.rr .bar{grid-column:1/-1;grid-row:2}
+.chart{min-height:240px}
+}
+
+.mesbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px}
+.mesbar[hidden]{display:none}
+.mesbar .in.sel{font-family:var(--body);min-width:12rem}
+.acc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}
+.acc:last-child{border-bottom:0}
+.acc .n{font-weight:600}
+.acc .v{font-family:var(--display);font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.acc .d{grid-column:1/-1;font-size:12px;color:var(--ink-3)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.row2{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.row2 label{display:flex;flex-direction:column;gap:4px}
+
+.ovr{grid-column:1/-1;display:flex;flex-direction:column;gap:4px;margin-top:6px;max-width:16rem}
+.ovr .in{width:100%}
+#gastos-card .tw{overflow-x:visible}
+#gastos-card table{table-layout:fixed}
+#gastos-card th:nth-child(1),#gastos-card td:nth-child(1){width:60px;text-align:center}
+#gastos-card th:nth-child(3),#gastos-card td:nth-child(3){width:150px}
+#gastos-card th:nth-child(4),#gastos-card td:nth-child(4){width:150px}
+#gastos-card th:nth-child(5),#gastos-card td:nth-child(5){width:56px}
+#gastos-card .in.wide{min-width:0}
+.ex2{grid-template-columns:minmax(8rem,2fr) minmax(6rem,1fr) auto}
+.ex td:nth-child(1){width:auto}
+@media (max-width:640px){#gastos-card table{table-layout:auto}#gastos-card th:nth-child(n),#gastos-card td:nth-child(n){width:auto;text-align:inherit}.ex2{grid-template-columns:1fr 1fr}.ex2 .btn{grid-column:1/-1}.gt.ex tr{grid-template-columns:1fr auto auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sticky">
+<div class="top">
+<div class="brand"><div class="mark" aria-hidden="true"></div><b>Planificación Jaime</b><span>v4</span></div>
+<div class="savebar">
+<span class="status" id="status" role="status" aria-live="polite">Cargando…</span>
+<button class="btn ghost" id="discard" type="button" disabled>Descartar</button>
+<button class="btn" id="save" type="button" disabled>Guardar y actualizar</button>
+</div>
+</div>
+</div>
+
+<div class="tabs" role="tablist" aria-label="Secciones">
+<button class="tab" id="tab-reparto" role="tab" aria-selected="true" aria-controls="reparto" data-tab="reparto">Reparto de dinero</button>
+<button class="tab" id="tab-mensual" role="tab" aria-selected="false" aria-controls="mensual" data-tab="mensual">Planificación mensual</button>
+<button class="tab" id="tab-casa" role="tab" aria-selected="false" aria-controls="casa" data-tab="casa">Planificación casa</button>
+<button class="tab" id="tab-resumen" role="tab" aria-selected="false" aria-controls="resumen" data-tab="resumen">Resumen</button>
+</div>
+
+<div class="mesbar" id="mesbar">
+<label class="muted" for="mes">Mes</label>
+<select class="in sel" id="mes" aria-label="Mes que estás editando"></select>
+<button class="btn ghost" id="mes-prev" type="button">Copiar del mes anterior</button>
+<button class="btn ghost" id="mes-reset" type="button">Restablecer a la plantilla</button>
+<span class="muted" id="mes-note"></span>
+</div>
+
+<!-- ============ REPARTO ============ -->
+<div class="panel" id="reparto" role="tabpanel" aria-labelledby="tab-reparto">
+<header>
+<h1>Reparto de dinero</h1>
+<p class="lead" style="margin-top:8px">Este mes entran <b data-k="entra">—</b>. Mándalos así: <b data-k="r_sab">—</b> a la cuenta Sabadell, <b data-k="r_ing">—</b> a la cuenta ING y <b data-k="r_aho">—</b> a la cuenta ahorro Sabadell.</p>
+<p class="muted" style="margin-top:6px">El reparto sale del mes que elijas arriba, de tus gastos y de tus ingresos extras de la planificación mensual. Puedes cambiar lo que va a Sabadell y a ING; lo que sobra va a ahorro.</p>
+</header>
+<p class="warnbox" data-warnr hidden>Lo que entra no cubre las cuentas Sabadell e ING: no queda nada para ahorro este mes.</p>
+
+<section class="grid2">
+<div class="card">
+<div class="hd"><span class="eyebrow">Cuentas</span><h2>Cuánto va a cada cuenta</h2><span class="muted">Cada vez que entre dinero, repártelo así</span></div>
+<div class="acc"><span class="n">Cuenta Sabadell</span><span class="v" data-k="r_sab">—</span><span class="d">IVA neto, cuota de autónomo y reserva para la Renta · <span data-k="p_sab">—</span> de lo que entra</span>
+<label class="ovr"><span class="muted">Cambiar importe (€). Vacío = automático</span><input class="in" id="in-rsab" type="text" inputmode="decimal" placeholder="Automático"></label></div>
+<div class="acc"><span class="n">Cuenta ING</span><span class="v" data-k="r_ing">—</span><span class="d">Gastos de vida del mes y gastos de la empresa · <span data-k="p_ing">—</span> de lo que entra</span>
+<label class="ovr"><span class="muted">Cambiar importe (€). Vacío = automático</span><input class="in" id="in-ring" type="text" inputmode="decimal" placeholder="Automático"></label></div>
+<div class="acc"><span class="n">Cuenta ahorro Sabadell</span><span class="v" data-k="r_aho">—</span><span class="d">Todo lo que se ahorra en el mes, sin tocarlo · <span data-k="p_aho">—</span> de lo que entra</span></div>
+<div class="ctl">
+<label><span class="muted">Dinero que entra este mes (€). Vacío = automático</span><input class="in" id="in-entra" type="text" inputmode="decimal" placeholder="Automático"></label>
+</div>
+</div>
+<div class="card">
+<div class="hd"><span class="eyebrow">Gráfica</span><h2>Reparto de lo que entra</h2><span class="muted">Porcentaje de cada cuenta sobre el total</span></div>
+<div class="rep" id="rep-bars"></div>
+<p class="muted">La cuenta Sabadell paga el IVA neto, la cuota de autónomo y la reserva para la Renta. La cuenta ING cubre los gastos de vida y los gastos de la empresa. Lo demás va a la cuenta ahorro Sabadell.</p>
+</div>
+</section>
+<section class="card">
+<div class="hd"><span class="eyebrow">Mes a mes</span><h2>Cómo se reparte cada mes</h2></div>
+<div class="legend" id="leg-rep"></div>
+<div class="chart" id="ch-rep"></div>
+</section>
+</div>
+
+<!-- ============ MENSUAL ============ -->
+<div class="panel" id="mensual" role="tabpanel" aria-labelledby="tab-mensual" hidden>
+<header>
+<h1>Tu mes, euro a euro</h1>
+<p class="lead" style="margin-top:8px">En <b data-k="mes_n">—</b> entran <b data-k="entra_n">—</b>. Tras impuestos y cuota quedan <b data-k="libre">—</b>, gastas <b data-k="vida">—</b> y ahorras <b data-k="ahorro">—</b>.</p>
+<p class="muted" style="margin-top:6px">Cambia el mes arriba y edita sus cifras. Al pulsar «Guardar y actualizar» se guardan y se recalculan el reparto y la planificación de la casa.</p>
+</header>
+<p class="warnbox" data-warn hidden>Con estos gastos no queda ahorro positivo este mes.</p>
+
+<section class="kpis">
+<div class="tile"><span class="eyebrow">Entra en tu cuenta</span><span class="v" data-k="entra_n">—</span><span class="sub">Factura + IVA − retención</span></div>
+<div class="tile"><span class="eyebrow">Libre tras impuestos</span><span class="v" data-k="libre">—</span><span class="sub">Antes de gastos de vida</span></div>
+<div class="tile"><span class="eyebrow">Gastos de vida</span><span class="v" data-k="vida">—</span><span class="sub">Los que cuentan</span></div>
+<div class="tile"><span class="eyebrow">Ingresos extras</span><span class="v" data-k="extra">—</span><span class="sub">De este mes</span></div>
+<div class="tile hot"><span class="eyebrow">Ahorro del mes</span><span class="v" data-k="ahorro">—</span><span class="sub">Libre + extras − gastos de vida</span></div>
+</section>
+
+<section class="card">
+<div class="hd"><span class="eyebrow">Fiscal del mes</span><h2>Datos fiscales de este mes</h2><span class="muted">Factura y gastos del negocio de este mes. El resto de datos fiscales están más abajo.</span></div>
+<div class="ctl">
+<label><span class="muted">Factura base del mes (sin IVA, €)</span><input class="in" id="in-ing" type="text" inputmode="decimal"></label>
+<label><span class="muted">Gastos del negocio del mes (IVA incl., €)</span><input class="in" id="in-gneg" type="text" inputmode="decimal"></label>
+<label><span class="muted">Cuota de autónomo que pagas (€, 0 = mínima)</span><input class="in" id="in-ss" type="text" inputmode="decimal"></label>
+</div>
+</section>
+
+<section class="card" id="gastos-card">
+<div class="hd"><span class="eyebrow">Gastos de vida</span><h2>Qué gastas y qué puedes cambiar</h2><span class="muted">Marca para contar un gasto, cambia nombre, tipo e importe, o bórralo con la ×.</span></div>
+<div class="chips" id="gsub"></div>
+<div class="tw"><table class="gt"><thead><tr><th>Contar</th><th>Concepto</th><th>Tipo</th><th class="r">Importe al mes</th><th></th></tr></thead><tbody id="gastos"></tbody></table></div>
+<div>
+<p class="eyebrow" style="margin-bottom:6px">Añadir un gasto</p>
+<div class="addrow">
+<label><span class="muted">Concepto</span><input class="in wide" id="add-n" type="text" maxlength="40" placeholder="Ej. Gimnasio"></label>
+<label><span class="muted">Importe al mes</span><input class="in" id="add-i" type="text" inputmode="decimal" placeholder="0,00"></label>
+<label><span class="muted">Tipo</span><select class="in sel" id="add-t" style="width:100%"><option>Fijos</option><option selected>Variables</option><option>Puntuales</option></select></label>
+<button class="btn" id="add-b" type="button">Añadir</button>
+</div>
+</div>
+</section>
+
+<section class="grid2">
+<div class="card">
+<div class="hd"><span class="eyebrow">Mes tipo</span><h2>Adónde va lo que cobras</h2><span class="muted">Sobre lo que entra en tu cuenta este mes</span></div>
+<div class="rep" id="reparto-m"></div>
+<p class="muted">El IVA es el neto que pagas a Hacienda: el cobrado menos el de tus gastos. La reserva de IRPF es lo que falta por pagar en la Renta después de las retenciones.</p>
+</div>
+<div class="card" id="extras-card">
+<div class="hd"><span class="eyebrow">Ingresos extras</span><h2>Dinero extra de este mes</h2><span class="muted">Ventas sueltas, devoluciones, regalos… Suman al ahorro del mes. Se cuentan sin impuestos.</span></div>
+<div class="chips" id="exsub"></div>
+<div class="tw"><table class="ex"><thead><tr><th>Concepto</th><th class="r">Importe</th><th></th></tr></thead><tbody id="extras"></tbody></table></div>
+<div class="addrow ex2">
+<label><span class="muted">Concepto</span><input class="in wide" id="ex-n" type="text" maxlength="40" placeholder="Ej. Venta eBay"></label>
+<label><span class="muted">Importe</span><input class="in" id="ex-i" type="text" inputmode="decimal" placeholder="0,00"></label>
+<button class="btn" id="ex-b" type="button">Añadir</button>
+</div>
+<p class="muted" id="ex-note"></p>
+</div>
+</section>
+
+<section class="card">
+<div class="hd"><span class="eyebrow">Gráficas</span><h2>Mes a mes</h2><span class="muted">Elige qué mirar y cómo verlo</span></div>
+<div class="row2">
+<label><span class="muted">Qué mostrar</span><select class="in sel" id="c1-m"><option value="ahorro">Ahorro</option><option value="vida">Gastos de vida</option><option value="libre">Libre tras impuestos</option><option value="entra">Dinero que entra</option><option value="todo">Entra, gastos y ahorro</option></select></label>
+<label><span class="muted">Tipo de gráfica</span><select class="in sel" id="c1-t"><option value="bar">Barras</option><option value="line">Línea</option></select></label>
+<label><span class="muted">Meses</span><select class="in sel" id="c1-n"><option value="6">6</option><option value="12" selected>12</option><option value="18">18</option></select></label>
+</div>
+<div class="legend" id="c1-leg"></div>
+<div class="chart" id="c1"></div>
+</section>
+
+<section class="grid2">
+<div class="card">
+<div class="hd"><span class="eyebrow">Por tipo</span><h2>Fijos, variables y puntuales</h2><span class="muted">Del mes elegido</span></div>
+<div class="rep" id="c2"></div>
+</div>
+<div class="card">
+<div class="hd"><span class="eyebrow">Mayores gastos</span><h2>Dónde se va más dinero</h2><span class="muted">Los 8 más altos del mes elegido</span></div>
+<div class="rep" id="c3"></div>
+</div>
+</section>
+
+<section class="card">
+<div class="hd"><span class="eyebrow">Datos</span><h2>Datos fiscales y supuestos</h2><span class="muted">Valen para todos los meses. Los porcentajes se escriben en %.</span></div>
+<div class="tw"><table><thead><tr><th>Concepto</th><th class="r">Valor</th><th>Origen</th></tr></thead><tbody id="params"></tbody></table></div>
+</section>
+</div>
+
+<!-- ============ CASA ============ -->
+<div class="panel" id="casa" role="tabpanel" aria-labelledby="tab-casa" hidden>
+<header>
+<h1>Camino a la entrada de tu casa</h1>
+<p class="lead" style="margin-top:8px">Te faltan <b data-k="falta">—</b> para llegar a <b data-k="obj">—</b>. Mes a mes, con tus gastos y datos de cada mes, tardas <b data-k="meses">—</b> meses, hasta <b data-k="fecha">—</b>.</p>
+<p class="muted" style="margin-top:6px">Todo lo que cambies en planificación mensual, en cualquier mes, cambia este plan.</p>
+</header>
+<p class="warnbox" data-warn2 hidden>Con este ritmo de ahorro el objetivo no se alcanza. Cambia los gastos o prueba un ahorro extra.</p>
+
+<section class="kpis">
+<div class="tile"><span class="eyebrow">Ahorrado hoy</span><span class="v" data-k="actual">—</span><span class="sub">Lo que ya tienes</span></div>
+<div class="tile"><span class="eyebrow">Falta</span><span class="v" data-k="falta">—</span><span class="sub">Hasta la entrada</span></div>
+<div class="tile hot"><span class="eyebrow">Meses que quedan</span><span class="v" data-k="meses">—</span><span class="sub">Con los datos de cada mes</span></div>
+<div class="tile"><span class="eyebrow">Fecha estimada</span><span class="v" data-k="fecha" style="font-size:26px">—</span><span class="sub">Mes en que llegas</span></div>
+<div class="tile"><span class="eyebrow">Ahorro de este mes</span><span class="v" data-k="ahorro_cur">—</span><span class="sub">Incluye el extra de abajo</span></div>
+</section>
+
+<section class="card">
+<div class="hd"><span class="eyebrow">Progreso</span><h2>Ya llevas <span data-k="pct">—</span> de la entrada</h2></div>
+<div class="prog" role="img" aria-label="Progreso hacia la entrada"><i id="barra"></i></div>
+</section>
+
+<section class="card">
+<div class="hd"><span class="eyebrow">Simulador</span><h2>Mueve los números y mira el plazo</h2><span class="muted">El ahorrado y el objetivo se guardan con el botón de arriba. El extra es solo una prueba y no se guarda.</span></div>
+<div class="ctl">
+<label><span class="muted">Ahorrado hoy (€)</span><input class="in" id="in-actual" type="text" inputmode="decimal"></label>
+<label><span class="muted">Objetivo de entrada (€)</span><input class="in" id="in-obj" type="text" inputmode="decimal"></label>
+<label><span class="muted">Ahorro extra al mes (€, prueba)</span><input class="in" id="in-extra" type="text" inputmode="decimal" placeholder="0"></label>
+</div>
+</section>
+
+<section class="grid2">
+<div class="card">
+<div class="hd"><span class="eyebrow">Proyección</span><h2>Ahorro acumulado hacia la entrada</h2><span class="muted">Suma el ahorro de cada mes, con los datos de ese mes</span></div>
+<div class="chart" id="proy"></div>
+</div>
+<div class="card">
+<div class="hd"><span class="eyebrow">Hitos</span><h2>Cuándo llegas a cada tramo</h2></div>
+<div class="tw"><table><thead><tr><th>Tramo</th><th class="r">Cantidad</th><th class="r">En</th><th class="r">Fecha</th></tr></thead><tbody id="hitos"></tbody></table></div>
+</div>
+</section>
+
+<section class="card">
+<div class="hd"><span class="eyebrow">Escenarios</span><h2>Cuánto adelantas si ahorras más</h2><span class="muted">Cada fila parte del plan de ahora</span></div>
+<div class="tw"><table><thead><tr><th>Escenario</th><th class="r">Meses</th><th class="r">Fecha</th><th class="r">Adelantas</th></tr></thead><tbody id="esc"></tbody></table></div>
+<div class="legend" id="esc-leg"></div>
+<div class="rep" id="esc-bars"></div>
+</section>
+
+<section class="card">
+<div class="hd"><span class="eyebrow">Hipoteca</span><h2>Qué entrada necesita cada casa</h2><span class="muted">Hipotecas desde 80.000 € hasta 190.000 €, con la entrada y los gastos de compra de tus datos</span></div>
+<div class="tw"><table><thead><tr><th>Hipoteca</th><th class="r">Precio de la casa</th><th class="r">Entrada + gastos</th><th class="r">Te faltan</th><th class="r">Fecha</th><th class="r">Cuota al mes</th><th>¿La da el banco?</th></tr></thead><tbody id="hip"></tbody></table></div>
+<p class="note" style="max-width:72ch;line-height:1.5">El banco limita la cuota al <b data-k="ratio">—</b> de tu renta neta. Con el escenario prudente, tu cuota máxima es <b data-k="cuotaprud">—</b> al mes. «Justo» quiere decir que solo entra si el banco cuenta la renta antes de IRPF.</p>
+</section>
+
+<section class="grid2">
+<div class="card">
+<div class="hd"><span class="eyebrow">Gráfica</span><h2>Entrada necesaria por casa</h2><span class="muted">Entrada más gastos frente a lo que ya tienes (<span data-k="actual">—</span>)</span></div>
+<div class="rep" id="g-need"></div>
+</div>
+<div class="card">
+<div class="hd"><span class="eyebrow">Gráfica</span><h2>Cuota frente al límite del banco</h2><span class="muted">Verde cabe en el escenario prudente; ámbar solo antes de IRPF; rojo no entra</span></div>
+<div class="rep" id="g-cuota"></div>
+</div>
+</section>
+<section class="card">
+<div class="hd"><span class="eyebrow">Gráfica</span><h2>Meses hasta tener la entrada de cada casa</h2><span class="muted">Con el ritmo de ahorro de cada mes</span></div>
+<div class="rep" id="g-meses"></div>
+</section>
+
+<section class="card">
+<div class="hd"><span class="eyebrow">Banco</span><h2>Lo que ve el banco</h2><span class="muted">Cuánta cuota y cuánta hipoteca te darían</span></div>
+<p class="note" style="max-width:70ch;line-height:1.5">El banco no mira lo que cobras ni tu dinero libre. Mira el rendimiento neto de tu actividad en las últimas declaraciones de la Renta, normalmente la media de dos años. Unos bancos usan la renta antes de IRPF y otros después, por eso ves las dos.</p>
+<div class="tw"><table><thead><tr><th>Escenario</th><th class="r">Renta mensual</th><th class="r">Cuota máxima</th><th class="r">Hipoteca máxima</th><th class="r">Precio máx. por financiación</th></tr></thead><tbody id="banco"></tbody></table></div>
+<p class="note" style="max-width:70ch;line-height:1.5">Tu entrada de <b data-k="obj">—</b> cubre una vivienda de unos <b data-k="precio">—</b>, contando entrada y gastos de compra. Es el límite real, no la cuota.</p>
+<div>
+<p class="eyebrow" style="margin-bottom:6px">Qué te pedirá el banco</p>
+<ul class="docs muted">
+<li>Las dos últimas declaraciones de la Renta (Modelo 100)</li>
+<li>Los Modelos 303 y 130 o 131 de los últimos trimestres y el resumen anual de IVA</li>
+<li>Vida laboral y certificados de estar al corriente con Hacienda y la Seguridad Social</li>
+<li>Extractos de tus cuentas de los últimos 6 a 12 meses</li>
+</ul>
+</div>
+</section>
+</div>
+
+<!-- ============ RESUMEN ============ -->
+<div class="panel" id="resumen" role="tabpanel" aria-labelledby="tab-resumen" hidden>
+<header>
+<h1>Resumen</h1>
+<p class="lead" style="margin-top:8px">En <b data-k="rs_tit">—</b> entran <b data-k="rs_entra">—</b>, gastas <b data-k="rs_gasto">—</b> y ahorras <b data-k="rs_aho">—</b>.</p>
+<p class="muted" style="margin-top:6px">Mira un mes o el total de varios meses para comprobar cómo vas. Los meses sin datos propios usan la plantilla.</p>
+</header>
+<section class="card">
+<div class="row2">
+<label><span class="muted">Ver</span><select class="in sel" id="rs-mes" aria-label="Mes o total"></select></label>
+<label><span class="muted">Meses del total y de las gráficas</span><select class="in sel" id="rs-n"><option value="6">6 meses</option><option value="12" selected>12 meses</option><option value="18">18 meses</option></select></label>
+</div>
+</section>
+<section class="kpis">
+<div class="tile"><span class="eyebrow">Entra</span><span class="v" data-k="rs_entra">—</span><span class="sub">Con ingresos extras</span></div>
+<div class="tile"><span class="eyebrow">Cuenta Sabadell</span><span class="v" data-k="rs_sab">—</span><span class="sub">IVA, cuota y Renta</span></div>
+<div class="tile"><span class="eyebrow">Cuenta ING</span><span class="v" data-k="rs_ing">—</span><span class="sub">Vida y empresa</span></div>
+<div class="tile"><span class="eyebrow">Ingresos extras</span><span class="v" data-k="rs_extra">—</span><span class="sub">Ya incluidos arriba</span></div>
+<div class="tile hot"><span class="eyebrow">Ahorro Sabadell</span><span class="v" data-k="rs_aho">—</span><span class="sub"><span data-k="rs_pct">—</span> de lo que entra</span></div>
+<div class="tile"><span class="eyebrow">Ahorro medio al mes</span><span class="v" data-k="rs_med">—</span><span class="sub">En el periodo</span></div>
+</section>
+<section class="card">
+<div class="hd"><span class="eyebrow">Tabla</span><h2>Mes a mes y total</h2></div>
+<div class="tw"><table><thead><tr><th>Mes</th><th class="r">Entra</th><th class="r">Sabadell</th><th class="r">ING</th><th class="r">Ahorro</th><th class="r">Acumulado</th></tr></thead><tbody id="rs-tab"></tbody></table></div>
+</section>
+<section class="grid2">
+<div class="card">
+<div class="hd"><span class="eyebrow">Gráfica</span><h2>Entra, gasto y ahorro</h2></div>
+<div class="legend" id="rs-leg1"></div>
+<div class="chart" id="rs-c1"></div>
+</div>
+<div class="card">
+<div class="hd"><span class="eyebrow">Gráfica</span><h2>Ahorro acumulado</h2></div>
+<div class="legend" id="rs-leg2"></div>
+<div class="chart" id="rs-c2"></div>
+</div>
+</section>
+<section class="card">
+<div class="hd"><span class="eyebrow">Gastos de vida</span><h2>Por tipo en el periodo</h2></div>
+<div class="rep" id="rs-tipo"></div>
+</section>
+</div>
+</div>
+<script>
+(function () {
+'use strict';
+var PARAMS = [
+ {k:'ingreso_base',l:'Factura base mensual por defecto (sin IVA)',u:'eur',o:'Excel'},
+ {k:'iva',l:'IVA repercutido',u:'pct',o:'Excel'},
+ {k:'retencion',l:'Retención IRPF en factura',u:'pct',o:'Excel'},
+ {k:'gasto_iva',l:'Gastos del negocio por defecto al mes (IVA incluido)',u:'eur',o:'Excel'},
+ {k:'iva_gasto',l:'IVA de esos gastos',u:'pct',o:'Excel'},
+ {k:'ss_excel',l:'Cuota de autónomo que pone tu Excel',u:'eur',o:'Excel'},
+ {k:'cuota_ss_elegida',l:'Cuota de autónomo que pagas por defecto (0 = la mínima de tu tramo)',u:'eur',o:'Tu Excel'},
+ {k:'nomina',l:'Nómina mensual de Gualaru SL',u:'eur',o:'Excel'},
+ {k:'minimo_personal',l:'Mínimo personal IRPF',u:'eur',o:'Normativa'},
+ {k:'dif_just',l:'Aplicar 5 % de gastos de difícil justificación (1 = sí, 0 = no)',u:'num',o:'Supuesto'},
+ {k:'ahorro_actual',l:'Ahorro actual para la entrada',u:'eur',o:'Tu dato'},
+ {k:'objetivo',l:'Objetivo de entrada',u:'eur',o:'Tu objetivo'},
+ {k:'ratio_deuda',l:'Endeudamiento máximo del banco',u:'pct',o:'Tu dato'},
+ {k:'coef_banco',l:'Parte de tu renta que el banco computa',u:'pct',o:'Supuesto'},
+ {k:'deuda_otros',l:'Otras cuotas de deuda al mes',u:'eur',o:'Supuesto'},
+ {k:'interes',l:'Tipo de interés de la hipoteca',u:'pct',o:'Supuesto'},
+ {k:'plazo',l:'Plazo de la hipoteca (años)',u:'num',o:'Supuesto'},
+ {k:'ltv',l:'Financiación máxima sobre el precio',u:'pct',o:'Supuesto'},
+ {k:'entrada_pct',l:'Entrada sobre el precio',u:'pct',o:'Supuesto'},
+ {k:'gastos_compra',l:'Gastos de compra (impuestos, notaría, registro)',u:'pct',o:'Supuesto'}
+];
+var DEF_P = {ingreso_base:4500,iva:0.21,retencion:0.15,gasto_iva:200,iva_gasto:0.21,ss_excel:600,cuota_ss_elegida:0,nomina:0,minimo_personal:5550,dif_just:1,ahorro_actual:23000,objetivo:50000,ratio_deuda:0.35,coef_banco:1,deuda_otros:0,interes:0.03,plazo:30,ltv:0.8,entrada_pct:0.2,gastos_compra:0.1};
+var TRAMOS = [[670,205.88],[900,226.47],[1166.7,267.65],[1300,299.56],[1500,302.65],[1700,302.65],[1850,360.29],[2030,380.88],[2330,401.47],[2760,427.21],[3190,452.94],[3620,478.68],[4050,504.41],[6000,545.59],[1000000,607.35]];
+var LOANS = [80000,100000,120000,140000,160000,190000];
+var G0 = [
+ ['Fijos','Amazon Prime',13.98,1,'Revisar'],['Fijos','Apple · suscripciones fijas',42.70,1,'Revisar'],['Fijos','Make (automatización)',9.75,1,'Se quita el mes que viene'],['Fijos','Hosting Acens (ING)',9.67,1,''],['Fijos','Móvil Simyo',7.00,1,''],['Fijos','Seguro (póliza)',22.19,1,'Se quita el mes que viene'],['Fijos','Spotify',11.99,1,'Suprimir'],['Fijos','Zoom',15.99,1,'Revisar'],['Fijos','PayPal · Acens',2.66,1,''],['Fijos','PayPal · Wondershare',2.50,1,'2,41 USD'],['Fijos','PayPal · OpenAI',8.00,1,''],['Fijos','PayPal · Fastspring',9.61,1,''],
+ ['Variables','Restauración y cafés',343.09,1,'Recortar'],['Variables','Compras Amazon',310.52,1,'Separa negocio y personal'],['Variables','Efectivo',290.00,1,'Sin detallar'],['Variables','Supermercado',158.70,1,'Necesario'],['Variables','Gasolina y peajes',115.38,1,'Necesario'],['Variables','Bizum enviado',77.00,1,''],['Variables','Apple · otras compras',64.72,1,''],['Variables','Deporte (Decathlon)',57.21,1,'Recortar'],['Variables','Pádel y app',29.99,1,'Recortar'],['Variables','Farmacia y salud',37.32,1,'Necesario'],['Variables','Varios (hogar, comisión, PayPal)',11.79,1,''],
+ ['Puntuales','Viaje (hotel)',254.49,0,'Gasto puntual de octubre']
+].map(function (r, i) { return {id:'g'+(i+1),grupo:r[0],concepto:r[1],importe:r[2],activo:r[3],nota:r[4]}; });
+
+var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+var $ = function (id) { return document.getElementById(id); };
+var eur = new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+var pctf = new Intl.NumberFormat('es-ES',{style:'percent',maximumFractionDigits:0});
+var numf = new Intl.NumberFormat('es-ES',{maximumFractionDigits:2});
+var E = function (v) { return v == null || isNaN(v) ? '—' : eur.format(v); };
+var parse = function (s) { var t = String(s).trim(); if (t === '') return null; var v = parseFloat(t.replace(',', '.')); return isNaN(v) ? null : v; };
+var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+var cap = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
+function key(off) { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + off); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+function mlabel(k) { if (k === 'base') return 'plantilla'; var p = k.split('-'); return new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(new Date(+p[0], +p[1] - 1, 1)); }
+function mshort(k) { var p = k.split('-'); return cap(new Intl.DateTimeFormat('es-ES',{month:'short'}).format(new Date(+p[0], +p[1] - 1, 1))).replace('.', '') + ' ' + p[0].slice(2); }
+function dateIn(n) { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + n); return new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(d); }
+function prevKey(k) { var p = k.split('-'), d = new Date(+p[0], +p[1] - 2, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+
+var cur = key(0);
+var st = {gastos: clone(G0), params: clone(DEF_P), meses: {}};
+function norm(s) {
+  var o = clone(s), base = JSON.stringify(o.gastos);
+  Object.keys(o.meses).forEach(function (k) {
+    var m = o.meses[k]; if (m.gastos && JSON.stringify(m.gastos) === base) delete m.gastos;
+    ['ingreso_base', 'gasto_iva', 'cuota_ss', 'entrada'].forEach(function (f) { if (m[f] == null) delete m[f]; });
+    if (m.extras && !m.extras.length) delete m.extras;
+    if (m.rep) { ['sab', 'ing'].forEach(function (f) { if (m.rep[f] == null) delete m.rep[f]; }); if (!Object.keys(m.rep).length) delete m.rep; }
+    if (!Object.keys(m).length) delete o.meses[k];
+  });
+  return o;
+}
+var saved = clone(norm(st)), sel = cur, extra = 0, db = null, ref = null, savedAt = null, msg = '', msgCls = '', busy = false, memo = {};
+
+function scale(b) { var t = [[12450,.19],[20200,.24],[35200,.30],[60000,.37],[300000,.45],[1e12,.47]], c = 0, p = 0; for (var i = 0; i < t.length; i++) { if (b > p) c += (Math.min(b, t[i][0]) - p) * t[i][1]; p = t[i][0]; } return c; }
+function ensureOwn() { if (sel === 'base') return; var m = st.meses[sel] || (st.meses[sel] = {}); if (!m.gastos) m.gastos = clone(st.gastos); }
+function listFor(k) { var m = k === 'base' ? null : st.meses[k]; return (m && m.gastos) || st.gastos; }
+function calcM(k) {
+  if (memo[k]) return memo[k];
+  var P = st.params, m = k === 'base' ? {} : (st.meses[k] || {});
+  var ing = m.ingreso_base != null ? m.ingreso_base : P.ingreso_base, gn = m.gasto_iva != null ? m.gasto_iva : P.gasto_iva, ssE = m.cuota_ss != null ? m.cuota_ss : P.cuota_ss_elegida;
+  var vida = 0, variables = 0; listFor(k).forEach(function (g) { if (g.activo) { vida += g.importe; if (g.grupo === 'Variables') variables += g.importe; } });
+  var gb = gn / (1 + P.iva_gasto), ivaS = gn - gb, ivaR = ing * P.iva, rnCot = (ing - gb) * 0.93;
+  var tr = TRAMOS.filter(function (t) { return rnCot <= t[0]; })[0] || TRAMOS[TRAMOS.length - 1], ss = ssE > 0 ? ssE : tr[1];
+  var transf = ing + ivaR - ing * P.retencion + P.nomina, ivaNeto = ivaR - ivaS;
+  var prev = (ing - gb - ss) * 12, dj = P.dif_just ? Math.min(prev * 0.05, 2000) : 0, base = prev - dj + P.nomina * 12;
+  var cuota = Math.max(0, scale(base) - scale(P.minimo_personal)), prov = Math.max(0, cuota - ing * P.retencion * 12) / 12;
+  var extra = (m.extras || []).reduce(function (a, e) { return a + e.importe; }, 0), libre = transf - ss - gn - ivaNeto - prov;
+  var base0 = (ing - P.ss_excel - gn) * 12 + P.nomina * 12;
+  return (memo[k] = {k:k, ing:ing, gn:gn, transf:transf, extra:extra, total:transf + extra, entra: m.entrada != null ? m.entrada : transf + extra, ivaNeto:ivaNeto, ss:ss, prov:prov, cuota:cuota, libre:libre, vida:vida, variables:variables, ahorro:libre + extra - vida, base:base, base0:base0, cuota0:scale(base0)});
+}
+function sim(target, fn) {
+  var acc = st.params.ahorro_actual; if (acc >= target) return 0;
+  for (var j = 1; j <= 240; j++) { var c = calcM(key(j - 1)); acc += c.ahorro + extra + (fn ? fn(c) : 0); if (acc >= target) return j; }
+  return null;
+}
+function bancoRows() {
+  var P = st.params, c = calcM(cur), f = function (n, renta) {
+    var cu = Math.max(0, P.ratio_deuda * renta * P.coef_banco - P.deuda_otros), r = P.interes / 12, nn = P.plazo * 12, hip = r > 0 ? cu * (1 - Math.pow(1 + r, -nn)) / r : cu * nn;
+    return {n:n, renta:renta * P.coef_banco, cuota:cu, hip:hip, precio:hip / P.ltv};
+  };
+  return [f('Tu Excel, antes de IRPF', c.base0 / 12), f('Tu Excel, después de IRPF', (c.base0 - c.cuota0) / 12), f('Corregido, antes de IRPF', c.base / 12), f('Corregido, después de IRPF (prudente)', (c.base - c.cuota) / 12)];
+}
+function repartoOf(c) {
+  var m = c.k === 'base' ? {} : (st.meses[c.k] || {}), r = m.rep || {}, sabA = c.ivaNeto + c.ss + c.prov, ingA = c.vida + c.gn;
+  var sab = r.sab != null ? r.sab : sabA, ing = r.ing != null ? r.ing : ingA, rest = c.entra - sab - ing;
+  return {sab:sab, ing:ing, aho:Math.max(0, rest), rest:rest, sabA:sabA, ingA:ingA};
+}
+function row(tb, cells, cls) { var tr = el('tr', cls || ''); cells.forEach(function (c) { tr.append(el('td', c[1] || '', c[0])); }); tb.append(tr); return tr; }
+
+function barsH(box, items) {
+  box.replaceChildren(); var mx = Math.max.apply(null, items.map(function (i) { return i.value || 0; }).concat([1]));
+  items.forEach(function (it) {
+    var d = el('div', 'rr'); d.append(el('span', '', it.label));
+    var bar = el('div', 'bar'), fill = el('i'); fill.style.width = Math.max(0, Math.min(100, (it.value || 0) / (it.max || mx) * 100)) + '%'; fill.style.background = it.color || 'var(--accent)';
+    bar.append(fill); d.append(bar); d.append(el('span', 'v', it.text != null ? it.text : E(it.value))); box.append(d);
+  });
+}
+function vchart(box, leg, labels, series, kind, stacked) {
+  box.replaceChildren(); leg.replaceChildren();
+  series.forEach(function (s) { var sp = el('span'), i = el('i'); i.style.background = s.color; sp.append(i, document.createTextNode(s.name)); leg.append(sp); });
+  var W = Math.max(300, box.clientWidth || 600), H = 260, M = {t:12, r:12, b:30, l:56}, n = labels.length, all = [];
+  labels.forEach(function (_, j) { if (stacked) { var t = 0; series.forEach(function (s) { t += Math.max(0, s.values[j]); }); all.push(t); } else series.forEach(function (s) { all.push(s.values[j]); }); });
+  var hi = Math.max(1, Math.max.apply(null, all)), lo = Math.min(0, Math.min.apply(null, all)), raw = (hi - lo) / 4, mag = Math.pow(10, Math.floor(Math.log10(raw))), step = [1, 2, 2.5, 5, 10].map(function (x) { return x * mag; }).filter(function (x) { return x >= raw; })[0];
+  var top = Math.ceil(hi / step) * step, bot = Math.floor(lo / step) * step;
+  var y = function (v) { return M.t + (top - v) / (top - bot) * (H - M.t - M.b); }, band = (W - M.l - M.r) / n, cx = function (j) { return M.l + band * (j + 0.5); };
+  var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('width', '100%'); svg.setAttribute('role', 'img');
+  var add = function (t, a, txt) { var e = document.createElementNS(ns, t); Object.keys(a).forEach(function (k) { e.setAttribute(k, a[k]); }); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; };
+  var tx = {fill:'var(--ink-3)', 'font-size':11, 'font-family':'IBM Plex Mono, ui-monospace, monospace'};
+  for (var t = bot; t <= top + 1e-9; t += step) { add('line', {x1:M.l, x2:W - M.r, y1:y(t), y2:y(t), stroke: Math.abs(t) < 1e-9 ? 'var(--line-strong)' : 'var(--line)'}); add('text', Object.assign({x:M.l - 8, y:y(t) + 4, 'text-anchor':'end'}, tx), Math.abs(t) >= 1000 ? numf.format(Math.round(t / 100) / 10) + ' k' : String(Math.round(t))); }
+  var every = n > 14 ? 2 : 1; labels.forEach(function (l, j) { if (j % every === 0) add('text', Object.assign({x:cx(j), y:H - 8, 'text-anchor':'middle'}, tx), l); });
+  if (kind === 'line') {
+    series.forEach(function (s) {
+      add('path', {d:s.values.map(function (v, j) { return (j ? 'L' : 'M') + cx(j) + ' ' + y(v); }).join(' '), fill:'none', stroke:s.color, 'stroke-width':2.5, 'stroke-linecap':'round', 'stroke-linejoin':'round'});
+      s.values.forEach(function (v, j) { var c = add('circle', {cx:cx(j), cy:y(v), r:3.5, fill:s.color}); var tt = document.createElementNS(ns, 'title'); tt.textContent = s.name + ' · ' + labels[j] + ': ' + E(v); c.appendChild(tt); });
+    });
+  } else {
+    labels.forEach(function (_, j) {
+      var acc = 0, bw = stacked ? band * 0.7 : band * 0.7 / series.length;
+      series.forEach(function (s, si) {
+        var v = s.values[j], x0 = stacked ? cx(j) - bw / 2 : cx(j) - band * 0.35 + si * bw, y1 = stacked ? y(acc + Math.max(0, v)) : y(Math.max(0, v)), y2 = stacked ? y(acc) : y(Math.min(0, v));
+        var r = add('rect', {x:x0, y:Math.min(y1, y2), width:Math.max(1, bw - (stacked ? 0 : 1)), height:Math.max(1, Math.abs(y2 - y1)), fill:s.color, rx:2}); var tt = document.createElementNS(ns, 'title'); tt.textContent = s.name + ' · ' + labels[j] + ': ' + E(v); r.appendChild(tt);
+        if (stacked) acc += Math.max(0, v);
+      });
+    });
+  }
+  box.append(svg);
+}
+function lineGoal(box, rows, goal, N) {
+  box.replaceChildren(); var W = Math.max(300, box.clientWidth || 600), H = 300, M = {t:14, r:16, b:30, l:54}, ymax = Math.max(goal, Math.max.apply(null, rows)) * 1.08;
+  var x = function (v) { return M.l + v / N * (W - M.l - M.r); }, y = function (v) { return H - M.b - v / ymax * (H - M.b - M.t); };
+  var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('width', '100%'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Ahorro acumulado frente al objetivo');
+  var add = function (n, a, t) { var e = document.createElementNS(ns, n); Object.keys(a).forEach(function (k) { e.setAttribute(k, a[k]); }); if (t != null) e.textContent = t; svg.appendChild(e); return e; };
+  var tx = {fill:'var(--ink-3)', 'font-size':11, 'font-family':'IBM Plex Mono, ui-monospace, monospace'};
+  var sy = ymax > 60000 ? 20000 : ymax > 30000 ? 10000 : 5000;
+  for (var t = 0; t <= ymax; t += sy) { add('line', {x1:M.l, x2:W - M.r, y1:y(t), y2:y(t), stroke:'var(--line)'}); add('text', Object.assign({x:M.l - 8, y:y(t) + 4, 'text-anchor':'end'}, tx), t >= 1000 ? (t / 1000) + ' k €' : t + ' €'); }
+  var sx = N > 48 ? 24 : N > 24 ? 12 : 6; for (var m = 0; m <= N; m += sx) add('text', Object.assign({x:x(m), y:H - 8, 'text-anchor':m === 0 ? 'start' : 'middle'}, tx), m + ' m');
+  add('line', {x1:M.l, x2:W - M.r, y1:y(goal), y2:y(goal), stroke:'var(--ink-2)', 'stroke-dasharray':'5 4'});
+  add('text', Object.assign({x:W - M.r, y:y(goal) - 6, 'text-anchor':'end'}, tx), 'Objetivo ' + E(goal));
+  add('path', {d:rows.map(function (v, i) { return (i ? 'L' : 'M') + x(i) + ' ' + y(v); }).join(' '), fill:'none', stroke:'var(--accent)', 'stroke-width':2.5, 'stroke-linecap':'round', 'stroke-linejoin':'round'});
+  var hit = rows.findIndex(function (v) { return v >= goal; }); if (hit >= 0) add('circle', {cx:x(hit), cy:y(rows[hit]), r:5, fill:'var(--accent)', stroke:'var(--surface)', 'stroke-width':2});
+  var dot = add('circle', {r:4, fill:'var(--accent)', display:'none'}), tip = el('div', 'tip'); tip.hidden = true;
+  var hot = add('rect', {x:M.l, y:M.t, width:W - M.l - M.r, height:H - M.t - M.b, fill:'transparent'});
+  hot.addEventListener('mousemove', function (ev) {
+    var r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * (W / r.width), i = Math.max(0, Math.min(N, Math.round((px - M.l) / (W - M.l - M.r) * N)));
+    dot.setAttribute('display', 'inline'); dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(rows[i])); tip.hidden = false; tip.textContent = 'Mes ' + i + ': ' + E(rows[i]);
+    tip.style.left = Math.min(box.clientWidth - tip.offsetWidth - 4, Math.max(4, x(i) * (r.width / W) - tip.offsetWidth / 2)) + 'px'; tip.style.top = Math.max(0, y(rows[i]) * (r.height / H) - 36) + 'px';
+  });
+  hot.addEventListener('mouseleave', function () { dot.setAttribute('display', 'none'); tip.hidden = true; });
+  box.append(svg); box.append(tip);
+}
+function windowKeys(n) { var s = -Math.round(n / 4), out = []; for (var i = 0; i < n; i++) out.push(key(s + i)); return out; }
+
+function render() {
+  memo = {};
+  var P = st.params, c = calcM(sel), c0 = calcM(cur), rp = repartoOf(c), obj = P.objetivo, actual = P.ahorro_actual, falta = Math.max(0, obj - actual), meses = sim(obj, null), bn = bancoRows();
+  var ahCur = c0.ahorro + extra, pe = P.entrada_pct + P.gastos_compra;
+  var K = {entra:E(c.entra), entra_n:E(c.total), extra:E(c.extra), r_sab:E(rp.sab), r_ing:E(rp.ing), r_aho:E(rp.aho), p_sab:pctf.format(c.entra > 0 ? rp.sab / c.entra : 0), p_ing:pctf.format(c.entra > 0 ? rp.ing / c.entra : 0), p_aho:pctf.format(c.entra > 0 ? rp.aho / c.entra : 0), mes_n:mlabel(sel), libre:E(c.libre), vida:E(c.vida), ahorro:E(c.ahorro), obj:E(obj), actual:E(actual), falta:E(falta),
+    meses: meses == null ? 'No llega' : numf.format(meses), fecha: meses == null ? 'No llega' : (meses === 0 ? 'Ya llegas' : dateIn(meses)), ahorro_cur:E(ahCur), pct:pctf.format(obj > 0 ? Math.min(1, actual / obj) : 0), precio:E(obj / pe), ratio:pctf.format(P.ratio_deuda), cuotaprud:E(bn[3].cuota)};
+  document.querySelectorAll('[data-k]').forEach(function (e) { var v = K[e.dataset.k]; if (v != null) e.textContent = v; });
+  document.querySelectorAll('[data-warn]').forEach(function (e) { e.hidden = !(c.ahorro <= 0); });
+  document.querySelectorAll('[data-warn2]').forEach(function (e) { e.hidden = !(meses == null); });
+  document.querySelectorAll('[data-warnr]').forEach(function (e) { e.hidden = !(rp.rest < 0); });
+  $('barra').style.width = (obj > 0 ? Math.min(100, actual / obj * 100) : 0) + '%';
+  var note = $('mes-note'); note.textContent = sel === 'base' ? 'Editas la plantilla: vale para los meses sin datos propios.' : (JSON.stringify(norm(st).meses[sel] || {}) === '{}' ? 'Este mes usa la plantilla.' : 'Este mes tiene sus propios datos.');
+
+  // reparto
+  barsH($('rep-bars'), [{label:'Cuenta Sabadell', value:rp.sab, color:'var(--info)', text:E(rp.sab)}, {label:'Cuenta ING', value:rp.ing, color:'var(--line-strong)', text:E(rp.ing)}, {label:'Cuenta ahorro Sabadell', value:rp.aho, color:'var(--accent)', text:E(rp.aho)}].map(function (i) { i.max = Math.max(c.entra, 1); return i; }));
+  var wk = windowKeys(12), lab = wk.map(mshort), rs = wk.map(function (k) { return repartoOf(calcM(k)); });
+  vchart($('ch-rep'), $('leg-rep'), lab, [{name:'Cuenta Sabadell', color:'#2F5FA8', values:rs.map(function (r) { return r.sab; })}, {name:'Cuenta ING', color:'#9AA0A8', values:rs.map(function (r) { return r.ing; })}, {name:'Cuenta ahorro Sabadell', color:'#B5562A', values:rs.map(function (r) { return r.aho; })}], 'bar', true);
+
+  // mensual
+  var rm = $('reparto-m'); rm.replaceChildren();
+  [['IVA neto a Hacienda', c.ivaNeto, 'imp'], ['Cuota de autónomo', c.ss, 'imp'], ['Gastos del negocio', c.gn, 'g'], ['Reserva para la Renta', c.prov, 'imp'], ['Gastos de vida', c.vida, 'g'], ['Ahorro del mes', c.ahorro, 'a']].forEach(function (r) {
+    var d = el('div', 'rr'); d.append(el('span', '', r[0])); var bar = el('div', 'bar'), fill = el('i'); fill.style.width = Math.max(0, Math.min(100, r[1] / c.total * 100)) + '%';
+    fill.style.background = r[2] === 'a' ? 'var(--accent)' : r[2] === 'imp' ? 'var(--info)' : 'var(--line-strong)'; bar.append(fill); d.append(bar); d.append(el('span', 'v', E(r[1]))); rm.append(d);
+  });
+  var sums = {Fijos:0, Variables:0, Puntuales:0}; listFor(sel).forEach(function (g) { if (g.activo) sums[g.grupo] = (sums[g.grupo] || 0) + g.importe; });
+  var gs = $('gsub'); gs.replaceChildren(); Object.keys(sums).forEach(function (k) { var s = el('span', '', k + ' '); s.append(el('b', '', E(sums[k]))); gs.append(s); });
+  var metric = $('c1-m').value, kind = $('c1-t').value, nM = +$('c1-n').value, wk2 = windowKeys(nM), cs = wk2.map(calcM), l2 = wk2.map(mshort);
+  var S = {ahorro:{name:'Ahorro', color:'#B5562A', values:cs.map(function (x) { return x.ahorro; })}, vida:{name:'Gastos de vida', color:'#7C838D', values:cs.map(function (x) { return x.vida; })}, libre:{name:'Libre tras impuestos', color:'#2F5FA8', values:cs.map(function (x) { return x.libre; })}, entra:{name:'Dinero que entra', color:'#2E7D5B', values:cs.map(function (x) { return x.total; })}};
+  vchart($('c1'), $('c1-leg'), l2, metric === 'todo' ? [S.entra, S.vida, S.ahorro] : [S[metric]], kind, false);
+  var gr = {Fijos:0, Variables:0, Puntuales:0}; listFor(sel).forEach(function (g) { if (g.activo) gr[g.grupo] += g.importe; });
+  barsH($('c2'), [{label:'Fijos', value:gr.Fijos, color:'var(--info)'}, {label:'Variables', value:gr.Variables, color:'var(--accent)'}, {label:'Puntuales', value:gr.Puntuales, color:'var(--line-strong)'}]);
+  var top = listFor(sel).filter(function (g) { return g.activo; }).slice().sort(function (a, b) { return b.importe - a.importe; }).slice(0, 8);
+  barsH($('c3'), top.map(function (g) { return {label:g.concepto, value:g.importe, text:E(g.importe), color:g.grupo === 'Variables' ? 'var(--accent)' : g.grupo === 'Fijos' ? 'var(--info)' : 'var(--line-strong)'}; }));
+
+  // casa
+  var N = meses != null ? Math.min(120, Math.max(12, meses + 6)) : 24, rows = [actual], acc = actual;
+  for (var j = 1; j <= N; j++) { acc += calcM(key(j - 1)).ahorro + extra; rows.push(Math.max(0, acc)); }
+  lineGoal($('proy'), rows, obj, N);
+  var hi = $('hitos'); hi.replaceChildren();
+  [0.25, 0.5, 0.75, 1].forEach(function (p) { var n = sim(obj * p, null); row(hi, [[pctf.format(p)], [E(obj * p), 'r'], [n == null ? 'No llega' : (n === 0 ? 'Hecho' : n + ' m'), 'r'], [n == null || n === 0 ? '—' : dateIn(n), 'r']]); });
+  var es = $('esc'); es.replaceChildren(); var eb = [], n0 = sim(obj, null);
+  [['Como ahora', function () { return 0; }], ['100 € más al mes', function () { return 100; }], ['250 € más al mes', function () { return 250; }], ['500 € más al mes', function () { return 500; }], ['Recortar un 20 % de los variables', function (x) { return x.variables * 0.2; }]].forEach(function (s, i) {
+    var n = sim(obj, s[1]), gana = (i === 0 || n == null || n0 == null) ? '—' : (n0 - n > 0 ? (n0 - n) + ' m antes' : 'Igual');
+    row(es, [[s[0], i === 0 ? 'strong' : ''], [n == null ? 'No llega' : String(n), 'r'], [n == null ? '—' : (n === 0 ? 'Ya llegas' : dateIn(n)), 'r'], [gana, 'r']]); eb.push({label:s[0], value:n == null ? 0 : n, text:n == null ? 'No llega' : n + ' m', color:i === 0 ? 'var(--line-strong)' : 'var(--accent)'});
+  });
+  barsH($('esc-bars'), eb);
+  var hp = $('hip'); hp.replaceChildren(); var gneed = [], gcuota = [], gmeses = [], maxCu = bn[3].cuota * 1.2;
+  LOANS.forEach(function (loan) {
+    var precio = loan / P.ltv, need = precio * pe, fl = Math.max(0, need - actual), r = P.interes / 12, nn = P.plazo * 12, cu = r > 0 ? loan * r / (1 - Math.pow(1 + r, -nn)) : loan / nn, k = sim(need, null);
+    var s = cu <= bn[3].cuota ? 'si' : cu <= bn[2].cuota ? 'justo' : 'no', tr = row(hp, [[E(loan), 'strong'], [E(precio), 'r'], [E(need), 'r'], [fl === 0 ? 'Nada' : E(fl), 'r'], [k == null ? 'No llega' : (k === 0 ? 'Ya llegas' : dateIn(k)), 'r'], [E(cu), 'r']]);
+    var td = el('td'); td.append(el('span', 'pill s-' + s, s === 'si' ? 'Sí' : s === 'justo' ? 'Justo' : 'No')); tr.append(td);
+    gneed.push({label:'Hipoteca ' + E(loan), value:need, text:E(need) + (fl === 0 ? ' · lo tienes' : ' · faltan ' + E(fl)), color:fl === 0 ? 'var(--ok)' : 'var(--accent)'});
+    gcuota.push({label:'Hipoteca ' + E(loan), value:cu, max:Math.max(maxCu, cu), text:E(cu) + ' / ' + E(bn[3].cuota), color:s === 'si' ? 'var(--ok)' : s === 'justo' ? 'var(--warn)' : 'var(--crit)'});
+    gmeses.push({label:'Hipoteca ' + E(loan), value:k == null ? 0 : k, text:k == null ? 'No llega' : (k === 0 ? 'Ya llegas' : k + ' m · ' + dateIn(k)), color:'var(--accent)'});
+  });
+  barsH($('g-need'), gneed); barsH($('g-cuota'), gcuota); barsH($('g-meses'), gmeses);
+  var bt = $('banco'); bt.replaceChildren(); bn.forEach(function (r, i) { row(bt, [[r.n, i === 3 ? 'strong' : ''], [E(r.renta), 'r'], [E(r.cuota), 'r'], [E(r.hip), 'r'], [E(r.precio), 'r']]); });
+  renderResumen();
+  status();
+}
+function renderResumen() {
+  var v = $('rs-mes').value, n = +$('rs-n').value, ks = v === 'total' ? windowKeys(n) : [v];
+  var cs = ks.map(calcM), rs = cs.map(repartoOf), T = {entra:0, sab:0, ing:0, extra:0, aho:0, vida:0, fijos:0, variables:0, puntuales:0};
+  cs.forEach(function (c, i) { T.entra += c.entra; T.sab += rs[i].sab; T.ing += rs[i].ing; T.extra += c.extra; T.aho += rs[i].aho; listFor(ks[i]).forEach(function (g) { if (g.activo) { if (g.grupo === 'Fijos') T.fijos += g.importe; else if (g.grupo === 'Variables') T.variables += g.importe; else T.puntuales += g.importe; } }); });
+  var R = {rs_tit: v === 'total' ? 'los ' + n + ' meses (' + mshort(ks[0]) + ' a ' + mshort(ks[ks.length - 1]) + ')' : mlabel(v), rs_entra:E(T.entra), rs_gasto:E(T.sab + T.ing), rs_aho:E(T.aho), rs_sab:E(T.sab), rs_ing:E(T.ing), rs_extra:E(T.extra), rs_pct:pctf.format(T.entra > 0 ? T.aho / T.entra : 0), rs_med:E(T.aho / ks.length)};
+  document.querySelectorAll('[data-k^="rs_"]').forEach(function (e) { if (R[e.dataset.k] != null) e.textContent = R[e.dataset.k]; });
+  var tb = $('rs-tab'); tb.replaceChildren(); var acc = 0;
+  ks.forEach(function (k, i) { acc += rs[i].aho; row(tb, [[cap(mlabel(k)), 'strong'], [E(cs[i].entra), 'r'], [E(rs[i].sab), 'r'], [E(rs[i].ing), 'r'], [E(rs[i].aho), 'r'], [E(acc), 'r']]); });
+  if (ks.length > 1) { var tr = row(tb, [['Total', 'strong'], [E(T.entra), 'r'], [E(T.sab), 'r'], [E(T.ing), 'r'], [E(T.aho), 'r'], [E(T.aho), 'r']]); Array.prototype.forEach.call(tr.children, function (td) { td.style.fontWeight = '600'; td.style.borderTop = '2px solid var(--line)'; }); }
+  var wk = windowKeys(n), wc = wk.map(calcM), wr = wc.map(repartoOf), lab = wk.map(mshort), cum = [], a2 = 0; wr.forEach(function (r) { a2 += r.aho; cum.push(a2); });
+  vchart($('rs-c1'), $('rs-leg1'), lab, [{name:'Entra', color:'#2E7D5B', values:wc.map(function (c) { return c.entra; })}, {name:'Gasto (Sabadell + ING)', color:'#7C838D', values:wr.map(function (r) { return r.sab + r.ing; })}, {name:'Ahorro', color:'#B5562A', values:wr.map(function (r) { return r.aho; })}], 'bar', false);
+  vchart($('rs-c2'), $('rs-leg2'), lab, [{name:'Ahorro acumulado', color:'#B5562A', values:cum}], 'line', false);
+  barsH($('rs-tipo'), [{label:'Fijos', value:T.fijos, color:'var(--info)'}, {label:'Variables', value:T.variables, color:'var(--accent)'}, {label:'Puntuales', value:T.puntuales, color:'var(--line-strong)'}]);
+}
+
+function dirty() { return JSON.stringify(norm(st)) !== JSON.stringify(saved); }
+function status() {
+  var s = $('status'), d = dirty(); $('save').disabled = busy || !db || !d; $('discard').disabled = busy || !d; s.className = 'status';
+  if (msg) { s.textContent = msg; if (msgCls) s.classList.add(msgCls); return; }
+  if (!db) { s.textContent = 'Sin guardado en esta vista'; return; }
+  if (d) { s.textContent = 'Cambios sin guardar'; s.classList.add('dirty'); }
+  else { s.textContent = savedAt ? 'Guardado ' + savedAt.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}) : 'Al día'; s.classList.add('ok'); }
+}
+function changed() { msg = ''; render(); }
+
+function setIn(id, v) { var i = $(id); if (document.activeElement !== i) i.value = v == null ? '' : String(Math.round(v * 100) / 100).replace('.', ','); }
+function syncInputs() {
+  var m = sel === 'base' ? null : (st.meses[sel] || {}), P = st.params;
+  setIn('in-ing', m && m.ingreso_base != null ? m.ingreso_base : P.ingreso_base); setIn('in-gneg', m && m.gasto_iva != null ? m.gasto_iva : P.gasto_iva); setIn('in-ss', m && m.cuota_ss != null ? m.cuota_ss : P.cuota_ss_elegida);
+  setIn('in-entra', m && m.entrada != null ? m.entrada : null); ['in-entra', 'in-rsab', 'in-ring'].forEach(function (id) { $(id).disabled = sel === 'base'; }); setIn('in-rsab', m && m.rep && m.rep.sab != null ? m.rep.sab : null); setIn('in-ring', m && m.rep && m.rep.ing != null ? m.rep.ing : null); setIn('in-actual', P.ahorro_actual); setIn('in-obj', P.objetivo);
+}
+function buildTables() {
+  if (sel !== 'base') ensureOwn();
+  var list = listFor(sel), tb = $('gastos'); tb.replaceChildren();
+  list.forEach(function (g) {
+    var tr = el('tr', g.activo ? '' : 'off');
+    var t0 = el('td'), chk = el('input', 'chk'); chk.type = 'checkbox'; chk.checked = !!g.activo; chk.setAttribute('aria-label', 'Contar ' + g.concepto);
+    chk.addEventListener('change', function () { g.activo = chk.checked ? 1 : 0; tr.className = g.activo ? '' : 'off'; changed(); }); t0.append(chk);
+    var t1 = el('td'), nm = el('input', 'in wide'); nm.type = 'text'; nm.maxLength = 40; nm.value = g.concepto; nm.setAttribute('aria-label', 'Concepto'); nm.addEventListener('input', function () { g.concepto = nm.value; changed(); }); t1.append(nm); if (g.nota) t1.append(el('div', 'muted', g.nota));
+    var t2 = el('td'), sl = el('select', 'in sel'); ['Fijos', 'Variables', 'Puntuales'].forEach(function (o) { sl.append(new Option(o, o)); }); sl.value = g.grupo; sl.setAttribute('aria-label', 'Tipo de ' + g.concepto); sl.addEventListener('change', function () { g.grupo = sl.value; changed(); }); t2.append(sl);
+    var t3 = el('td', 'r'), inp = el('input', 'in'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.value = g.importe.toFixed(2).replace('.', ','); inp.setAttribute('aria-label', 'Importe de ' + g.concepto);
+    inp.addEventListener('input', function () { var v = parse(inp.value); if (v != null && v >= 0) { g.importe = v; changed(); } }); inp.addEventListener('blur', function () { inp.value = g.importe.toFixed(2).replace('.', ','); }); t3.append(inp);
+    var t4 = el('td'), x = el('button', 'btn x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Quitar ' + g.concepto); x.addEventListener('click', function () { list.splice(list.indexOf(g), 1); buildTables(); changed(); }); t4.append(x);
+    tr.append(t0, t1, t2, t3, t4); tb.append(tr);
+  });
+  var pb = $('params'); pb.replaceChildren();
+  PARAMS.forEach(function (p) {
+    var tr = el('tr'); tr.append(el('td', '', p.l)); var td = el('td', 'r'), inp = el('input', 'in'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.setAttribute('aria-label', p.l);
+    var show = function () { var v = st.params[p.k]; inp.value = String(p.u === 'pct' ? Math.round(v * 10000) / 100 : v).replace('.', ','); }; show();
+    inp.addEventListener('input', function () { var v = parse(inp.value); if (v != null) { st.params[p.k] = p.u === 'pct' ? v / 100 : v; changed(); syncInputs(); } }); inp.addEventListener('blur', show);
+    td.append(inp); if (p.u === 'pct') td.append(document.createTextNode(' %')); if (p.u === 'eur') td.append(document.createTextNode(' €')); tr.append(td); var to = el('td'); to.append(el('span', 'pill ' + (p.o === 'Supuesto' ? 's-media' : 's-baja'), p.o)); tr.append(to); pb.append(tr);
+  });
+  syncInputs(); buildExtras();
+}
+function buildExtras() {
+  var tb = $('extras'); tb.replaceChildren(); var m = sel === 'base' ? null : st.meses[sel], list = (m && m.extras) || [], tot = 0;
+  $('ex-n').disabled = $('ex-i').disabled = $('ex-b').disabled = sel === 'base'; $('ex-note').textContent = sel === 'base' ? 'Elige un mes concreto arriba para añadir ingresos extras.' : '';
+  list.forEach(function (e) {
+    tot += e.importe; var tr = el('tr'), t1 = el('td'), nm = el('input', 'in wide'); nm.type = 'text'; nm.maxLength = 40; nm.value = e.concepto; nm.setAttribute('aria-label', 'Concepto'); nm.addEventListener('input', function () { e.concepto = nm.value; changed(); }); t1.append(nm);
+    var t2 = el('td', 'r'), inp = el('input', 'in'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.value = e.importe.toFixed(2).replace('.', ','); inp.setAttribute('aria-label', 'Importe de ' + e.concepto);
+    inp.addEventListener('input', function () { var v = parse(inp.value); if (v != null && v >= 0) { e.importe = v; changed(); } }); inp.addEventListener('blur', function () { inp.value = e.importe.toFixed(2).replace('.', ','); }); t2.append(inp);
+    var t3 = el('td'), x = el('button', 'btn x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Quitar ' + e.concepto); x.addEventListener('click', function () { list.splice(list.indexOf(e), 1); buildExtras(); changed(); }); t3.append(x); tr.append(t1, t2, t3); tb.append(tr);
+  });
+  var cs = $('exsub'); cs.replaceChildren(); var sp = el('span', '', 'Total extras '); sp.append(el('b', '', E(tot))); cs.append(sp);
+}
+function buildMonths() {
+  var s = $('mes'); s.replaceChildren(); s.append(new Option('Plantilla (meses sin datos propios)', 'base'));
+  for (var o = -5; o <= 12; o++) { var k = key(o); s.append(new Option(cap(mlabel(k)), k)); } s.value = sel;
+  var r = $('rs-mes'); r.replaceChildren(); r.append(new Option('Total del periodo', 'total')); for (var q = -5; q <= 12; q++) { var kk = key(q); r.append(new Option(cap(mlabel(kk)), kk)); } r.value = 'total';
+}
+function adopt(d) {
+  st = {gastos: Array.isArray(d.gastos) ? d.gastos.map(function (g) { return {id:String(g.id), grupo:g.grupo, concepto:String(g.concepto), importe:Number(g.importe) || 0, activo:g.activo ? 1 : 0, nota:g.nota || ''}; }) : clone(G0), params:Object.assign({}, DEF_P, d.params || {}), meses:clone(d.meses || {})};
+  saved = clone(norm(st));
+}
+async function save() {
+  if (!db || busy) return; busy = true; msg = 'Guardando…'; msgCls = ''; status();
+  try {
+    var n = norm(st), body = {gastos:n.gastos, params:n.params, meses:n.meses, updated:new Date().toISOString()};
+    await Promise.race([ref.set(body), new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, 12000); })]);
+    saved = clone(n); savedAt = new Date(); msg = '';
+  } catch (e) { msg = (e && e.message === 'timeout') ? 'Tarda demasiado en guardar. Vuelve a pulsar.' : 'No se pudo guardar: ' + ((e && (e.code || e.message)) || 'error'); msgCls = 'err'; }
+  busy = false; render();
+}
+function discard() { st = clone(saved); msg = ''; buildTables(); render(); }
+
+function show(id) {
+  if (['reparto', 'mensual', 'casa', 'resumen'].indexOf(id) < 0) id = 'reparto';
+  document.querySelectorAll('[data-tab]').forEach(function (t) { t.setAttribute('aria-selected', String(t.dataset.tab === id)); });
+  document.querySelectorAll('.panel').forEach(function (p) { p.hidden = p.id !== id; });
+  $('mesbar').hidden = id === 'casa' || id === 'resumen';
+  try { history.replaceState(null, '', '#' + id); } catch (e) {}
+  setTimeout(render, 0);
+}
+document.querySelectorAll('[data-tab]').forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.tab); }); });
+window.addEventListener('hashchange', function () { show(location.hash.slice(1)); });
+$('save').addEventListener('click', save); $('discard').addEventListener('click', discard);
+$('mes').addEventListener('change', function () { sel = this.value; buildTables(); render(); });
+$('mes-prev').addEventListener('click', function () { if (sel === 'base') return; var pk = prevKey(sel), pm = st.meses[pk] || {}, cp = clone(pm); delete cp.extras; delete cp.entrada; cp.gastos = clone(listFor(pk)); st.meses[sel] = cp; buildTables(); changed(); });
+$('mes-reset').addEventListener('click', function () { if (sel !== 'base') delete st.meses[sel]; buildTables(); changed(); });
+$('add-b').addEventListener('click', function () {
+  var n = $('add-n'), i = $('add-i'), v = parse(i.value); if (!n.value.trim() || v == null || v < 0) return;
+  listFor(sel).push({id:'g' + Date.now(), grupo:$('add-t').value, concepto:n.value.trim(), importe:v, activo:1, nota:''}); n.value = ''; i.value = ''; buildTables(); changed();
+});
+function bindMonth(id, field, param) {
+  $(id).addEventListener('input', function () {
+    var v = parse(this.value);
+    if (sel === 'base') { if (v != null) st.params[param] = v; } else { var m = st.meses[sel] || (st.meses[sel] = {}); if (v == null) delete m[field]; else m[field] = v; }
+    changed(); if (sel === 'base') syncPar();
+  });
+}
+function syncPar() { var rows = $('params').children; PARAMS.forEach(function (p, i) { if (p.u !== 'pct' && rows[i]) { var inp = rows[i].querySelector('input'); if (document.activeElement !== inp) inp.value = String(st.params[p.k]).replace('.', ','); } }); }
+bindMonth('in-ing', 'ingreso_base', 'ingreso_base'); bindMonth('in-gneg', 'gasto_iva', 'gasto_iva'); bindMonth('in-ss', 'cuota_ss', 'cuota_ss_elegida');
+$('in-entra').addEventListener('input', function () { if (sel === 'base') return; var m = st.meses[sel] || (st.meses[sel] = {}), v = parse(this.value); if (v == null) delete m.entrada; else m.entrada = v; changed(); });
+['sab', 'ing'].forEach(function (f) { $('in-r' + f).addEventListener('input', function () { if (sel === 'base') return; var m = st.meses[sel] || (st.meses[sel] = {}), v = parse(this.value); m.rep = m.rep || {}; if (v == null) delete m.rep[f]; else m.rep[f] = v; changed(); }); });
+$('ex-b').addEventListener('click', function () { if (sel === 'base') return; var n = $('ex-n'), i = $('ex-i'), v = parse(i.value); if (!n.value.trim() || v == null || v < 0) return; var m = st.meses[sel] || (st.meses[sel] = {}); (m.extras = m.extras || []).push({id:'e' + Date.now(), concepto:n.value.trim(), importe:v}); n.value = ''; i.value = ''; buildExtras(); changed(); });
+$('rs-mes').addEventListener('change', render); $('rs-n').addEventListener('change', render);
+$('in-actual').addEventListener('input', function () { var v = parse(this.value); if (v != null) { st.params.ahorro_actual = v; changed(); syncPar(); } });
+$('in-obj').addEventListener('input', function () { var v = parse(this.value); if (v != null) { st.params.objetivo = v; changed(); syncPar(); } });
+$('in-extra').addEventListener('input', function () { extra = parse(this.value) || 0; render(); });
+['c1-m', 'c1-t', 'c1-n'].forEach(function (id) { $(id).addEventListener('change', render); });
+window.addEventListener('resize', function () { clearTimeout(window.__rz); window.__rz = setTimeout(render, 150); });
+
+buildMonths(); buildTables(); show(location.hash.slice(1)); render();
+
+(async function () {
+  try {
+    if (!window.claude || !window.claude.use) { status(); return; }
+    db = await window.claude.use('db'); if (!db) { status(); return; }
+    ref = db.doc('finanzas/estado');
+    ref.onSnapshot(function (snap) {
+      if (snap.exists) { var inc = snap.data(); if (!dirty() && !busy && JSON.stringify(norm({gastos:inc.gastos || st.gastos, params:Object.assign({}, DEF_P, inc.params || {}), meses:inc.meses || {}})) !== JSON.stringify(saved)) { adopt(inc); buildTables(); } }
+      render();
+    }, function () { render(); });
+    render();
+  } catch (e) { db = null; status(); }
+})();
+})();
+</script>
+</body>
+</html>
