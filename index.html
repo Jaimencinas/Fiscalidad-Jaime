@@ -310,7 +310,7 @@ tr.off td{color:var(--ink-3)}
 <div class="tile"><span class="eyebrow">Falta</span><span class="v" data-k="falta">—</span><span class="sub">Hasta la entrada</span></div>
 <div class="tile hot"><span class="eyebrow">Meses que quedan</span><span class="v" data-k="meses">—</span><span class="sub">Con los datos de cada mes</span></div>
 <div class="tile"><span class="eyebrow">Fecha estimada</span><span class="v" data-k="fecha" style="font-size:26px">—</span><span class="sub">Mes en que llegas</span></div>
-<div class="tile"><span class="eyebrow">Ahorro de este mes</span><span class="v" data-k="ahorro_cur">—</span><span class="sub">Incluye el extra de abajo</span></div>
+<div class="tile"><span class="eyebrow">Ahorro de este mes</span><span class="v" data-k="ahorro_cur">—</span><span class="sub" data-k="ahorro_nota">Incluye el extra de abajo</span></div>
 </section>
 
 <section class="card">
@@ -595,7 +595,7 @@ function render() {
   var P = st.params, c = calcM(sel), c0 = calcM(cur), rp = repartoOf(c), obj = P.objetivo, actual = P.ahorro_actual, falta = Math.max(0, obj - actual), meses = sim(obj, null), bn = bancoRows();
   var ahCur = c0.ahorro + extra, pe = P.entrada_pct + P.gastos_compra;
   var K = {entra:E(c.entra), entra_n:E(c.total), extra:E(c.extra), r_sab:E(rp.sab), r_ing:E(rp.ing), r_wise:E(rp.wise), p_wise:pctf.format(c.entra > 0 ? rp.wise / c.entra : 0), r_aho:E(rp.aho), p_sab:pctf.format(c.entra > 0 ? rp.sab / c.entra : 0), p_ing:pctf.format(c.entra > 0 ? rp.ing / c.entra : 0), p_aho:pctf.format(c.entra > 0 ? rp.aho / c.entra : 0), mes_n:mlabel(sel), libre:E(c.libre), vida:E(c.vida), ahorro:E(c.ahorro), obj:E(obj), actual:E(actual), falta:E(falta),
-    meses: meses == null ? 'No llega' : numf.format(meses), fecha: meses == null ? 'No llega' : (meses === 0 ? 'Ya llegas' : dateIn(meses)), ahorro_cur:E(ahCur), pct:pctf.format(obj > 0 ? Math.min(1, actual / obj) : 0), precio:E(obj / pe), ratio:pctf.format(P.ratio_deuda), cuotaprud:E(bn[3].cuota)};
+    meses: meses == null ? 'No llega' : numf.format(meses), fecha: meses == null ? 'No llega' : (meses === 0 ? 'Ya llegas' : dateIn(meses)), ahorro_cur:E(ahCur), ahorro_nota: c0.extra > 0 ? 'Incluye ' + E(c0.extra) + ' de extras solo de este mes; el resto de meses ahorra ' + E(Math.max(0, ahCur - c0.extra)) : (extra > 0 ? 'Incluye el extra de abajo' : 'Lo que ahorras al mes'), pct:pctf.format(obj > 0 ? Math.min(1, actual / obj) : 0), precio:E(obj / pe), ratio:pctf.format(P.ratio_deuda), cuotaprud:E(bn[3].cuota)};
   document.querySelectorAll('[data-k]').forEach(function (e) { var v = K[e.dataset.k]; if (v != null) e.textContent = v; });
   document.querySelectorAll('[data-warn]').forEach(function (e) { e.hidden = !(c.ahorro <= 0); });
   document.querySelectorAll('[data-warn2]').forEach(function (e) { e.hidden = !(meses == null); });
@@ -633,7 +633,7 @@ function render() {
   var hi = $('hitos'); hi.replaceChildren();
   [0.25, 0.5, 0.75, 1].forEach(function (p) { var n = sim(obj * p, null); row(hi, [[pctf.format(p)], [E(obj * p), 'r'], [n == null ? 'No llega' : (n === 0 ? 'Hecho' : n + ' m'), 'r'], [n == null || n === 0 ? '—' : dateIn(n), 'r']]); });
   var es = $('esc'); es.replaceChildren(); var eb = [], n0 = sim(obj, null);
-  [['Como ahora', function () { return 0; }], ['100 € más al mes', function () { return 100; }], ['250 € más al mes', function () { return 250; }], ['500 € más al mes', function () { return 500; }], ['Recortar un 20 % de los variables', function (x) { return x.variables * 0.2; }]].forEach(function (s, i) {
+  [['Como ahora (cada mes con sus datos)', function () { return 0; }], ['Todos los meses como este mes', function (x) { return c0.ahorro - x.ahorro; }], ['100 € más al mes', function () { return 100; }], ['250 € más al mes', function () { return 250; }], ['500 € más al mes', function () { return 500; }], ['Recortar un 20 % de los variables', function (x) { return x.variables * 0.2; }]].forEach(function (s, i) {
     var n = sim(obj, s[1]), gana = (i === 0 || n == null || n0 == null) ? '—' : (n0 - n > 0 ? (n0 - n) + ' m antes' : 'Igual');
     row(es, [[s[0], i === 0 ? 'strong' : ''], [n == null ? 'No llega' : String(n), 'r'], [n == null ? '—' : (n === 0 ? 'Ya llegas' : dateIn(n)), 'r'], [gana, 'r']]); eb.push({label:s[0], value:n == null ? 0 : n, text:n == null ? 'No llega' : n + ' m', color:i === 0 ? 'var(--line-strong)' : 'var(--accent)'});
   });
