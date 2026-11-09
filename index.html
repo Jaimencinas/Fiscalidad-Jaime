@@ -660,11 +660,10 @@ function renderResumen() {
 
 function dirty() { return JSON.stringify(norm(st)) !== JSON.stringify(saved); }
 function status() {
-  var s = $('status'), d = dirty(); $('save').disabled = busy || !db || !d; $('discard').disabled = busy || !d; s.className = 'status';
+  var s = $('status'), d = dirty(); $('save').disabled = busy || !d; $('discard').disabled = busy || !d; s.className = 'status';
   if (msg) { s.textContent = msg; if (msgCls) s.classList.add(msgCls); return; }
-  if (!db) { s.textContent = 'Sin guardado en esta vista'; return; }
   if (d) { s.textContent = 'Cambios sin guardar'; s.classList.add('dirty'); }
-  else { s.textContent = savedAt ? 'Guardado ' + savedAt.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}) : 'Al día'; s.classList.add('ok'); }
+  else { s.textContent = savedAt ? 'Guardado ' + savedAt.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}) + (db ? '' : ' en este navegador') : 'Al día'; s.classList.add('ok'); }
 }
 function changed() { msg = ''; render(); }
 
@@ -717,11 +716,13 @@ function adopt(d) {
   st = {gastos: Array.isArray(d.gastos) ? d.gastos.map(function (g) { return {id:String(g.id), grupo:g.grupo, concepto:String(g.concepto), importe:Number(g.importe) || 0, activo:g.activo ? 1 : 0, nota:g.nota || ''}; }) : clone(G0), params:Object.assign({}, DEF_P, d.params || {}), meses:clone(d.meses || {})};
   saved = clone(norm(st));
 }
+var LS = 'planificacion-jaime-v1';
 async function save() {
-  if (!db || busy) return; busy = true; msg = 'Guardando…'; msgCls = ''; status();
+  if (busy) return; busy = true; msg = 'Guardando…'; msgCls = ''; status();
   try {
     var n = norm(st), body = {gastos:n.gastos, params:n.params, meses:n.meses, updated:new Date().toISOString()};
-    await Promise.race([ref.set(body), new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, 12000); })]);
+    if (db) await Promise.race([ref.set(body), new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, 12000); })]);
+    try { localStorage.setItem(LS, JSON.stringify(body)); } catch (e2) { if (!db) throw e2; }
     saved = clone(n); savedAt = new Date(); msg = '';
   } catch (e) { msg = (e && e.message === 'timeout') ? 'Tarda demasiado en guardar. Vuelve a pulsar.' : 'No se pudo guardar: ' + ((e && (e.code || e.message)) || 'error'); msgCls = 'err'; }
   busy = false; render();
@@ -765,6 +766,7 @@ $('in-extra').addEventListener('input', function () { extra = parse(this.value) 
 ['c1-m', 'c1-t', 'c1-n'].forEach(function (id) { $(id).addEventListener('change', render); });
 window.addEventListener('resize', function () { clearTimeout(window.__rz); window.__rz = setTimeout(render, 150); });
 
+try { var lsd = JSON.parse(localStorage.getItem(LS) || 'null'); if (lsd && lsd.params) adopt(lsd); } catch (e) {}
 buildMonths(); buildTables(); show(location.hash.slice(1)); render();
 
 (async function () {
